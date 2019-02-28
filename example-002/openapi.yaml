@@ -1,0 +1,204 @@
+openapi: 3.0.0
+
+info:
+  title: demo
+  version: 0.0.1
+  description: |
+               ### This is a sample server for a pet store.
+               The content can be multiline an formated using
+                __markdown__ syntax for `rich text` representation.
+               See [CommonMark Spec](https://spec.commonmark.org/0.28/) for details.
+
+
+  contact:
+    name: API Support
+    url: http://www.example.com/support
+    email: support@example.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://example.com/terms/
+
+servers:
+  - url: http://localhost:8181
+    description: My development server
+
+  - url: https://example.com
+    description: A exampel production system
+
+tags:
+  - name: dogs
+    description: A example Tag for dogs
+
+security:
+  -
+paths:
+
+  /dogs:
+
+    get:
+      description: Get a List of all dogs that are registered.
+      tags: 
+        - dogs
+      responses:
+        "200":
+          $ref: '#/components/responses/DogListResponse'
+        default:
+          $ref: '#/components/responses/GeneralError'
+
+    post:
+      tags: 
+        - dogs
+      description: Register a new dog.
+      requestBody:
+        description: the new dog informations you want to save.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Dog'
+      responses:
+        "201":
+          $ref: '#/components/responses/DogResponse'
+        "400":
+          $ref: '#/components/responses/IllegalInput'
+        default:
+          $ref: '#/components/responses/GeneralError'
+
+  /dogs/{dogId}:
+    parameters:
+      - name: dogId
+        in: path
+        description: The dogs unique ID
+        required: true
+        schema:
+          type: string
+          description: The dogs unique ID
+          minLength: 3
+          maxLength: 10
+
+    get:
+      tags: 
+        - dogs
+      description: Get a dog with the given `dogId`
+      responses:
+        "200":
+          $ref: '#/components/responses/DogResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/GeneralError'
+
+    delete:
+      tags: 
+        - dogs
+      description: Delete a dog with the given `dogId`
+      responses:
+        "200":
+          $ref: '#/components/responses/DogResponse'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/GeneralError'
+
+    put:
+      tags: 
+        - dogs
+      deprecated: true
+      description: Update the dogs information.
+      requestBody:
+        description: the new dog informations you want to save.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Dog'
+      responses:
+        "201":
+          $ref: '#/components/responses/DogResponse'
+        "400":
+          $ref: '#/components/responses/IllegalInput'
+        default:
+          $ref: '#/components/responses/GeneralError'
+
+components:
+
+  schemas:
+    GeneralError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    DogList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Dog'
+      example:
+        - id: abc
+          name: foobar
+          age: 5
+          country: DE
+        - id: def
+          name: bob
+          age: 10
+          country: CZ
+
+    Dog:
+      type: object
+      required:
+      - name
+      - age
+      properties:
+        id:
+          type: string
+          description: The dogs unique ID
+          minLength: 3
+          maxLength: 10
+        name:
+          type: string
+          description: The name of the dog
+        age:
+          type: integer
+          format: int32
+          description: The Age of the dog
+          minimum: 1
+          maximum: 21
+        country:
+          type: string
+          description: The [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1) country code where the dog lives
+          pattern: "^(\\d{3}|[A-Z]{2,3})$"
+      example:
+        id: "abc"
+        name: foobar
+        age: 5
+        country: DE
+
+
+  responses:
+    NotFound:
+      description: Entity not found.
+    IllegalInput:
+      description: Illegal input for operation.
+    GeneralError:
+      description: General Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeneralError'
+
+    DogResponse:
+      description: The saved dog
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Dog'
+
+    DogListResponse:
+      description: Resultset with all the dogs
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DogList'

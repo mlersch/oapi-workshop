@@ -1,0 +1,14 @@
+{
+  "apiPackage": "com.example.demo.api",
+  "modelPackage": "com.example.demo.model",
+  "invokerPackage": "com.example.demo",
+  "groupId": "com.example",
+  "artifactId": "demo",
+  "artifactVersion": "0.0.1",
+  "java8": "true",
+  "dateLibrary": "java8",
+  "hideGenerationTimestamp": "true",
+  "useBeanValidation": "true",
+  "delegatePattern": "false",
+  "serializableModel": "true"
+}
